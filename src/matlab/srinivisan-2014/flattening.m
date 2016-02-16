@@ -4,19 +4,19 @@ function [ Oimg,ma ] = flattening( Iimg )
     m=im2bw(Iimg,0.3);
     d= bwconvhull(m,'objects');
     B = medfilt2(d);
-    for i = 1:512
+    for i = 1:size(B,2)
     tt=find(B(:,i));
     if length(tt)==0
-        data(i)=NaN
+        data(i)=NaN;
     else
     data(i)=tt(length(tt));
     end
     end
     data(find(isnan(data)))=nanmean(data);
-    p = polyfit(1:512,mean(data)*ones(1,512),2);
+    p = polyfit(1:size(B,2),mean(data)*ones(1,512),2);
     y2 = polyval(p,data);
     ap=data-y2;
-    for i = 1:512
+    for i = 1:size(B,2)
     if ap(i)>0
     dif=abs(floor(ap(i)));
     te=Iimg(:,i);
