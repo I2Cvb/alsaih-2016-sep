@@ -6,8 +6,13 @@ function [ Oimg,ma ] = flattening( Iimg )
     B = medfilt2(d);
     for i = 1:512
     tt=find(B(:,i));
+    if length(tt)==0
+        data(i)=NaN
+    else
     data(i)=tt(length(tt));
     end
+    end
+    data(find(isnan(data)))=nanmean(data);
     p = polyfit(1:512,mean(data)*ones(1,512),2);
     y2 = polyval(p,data);
     ap=data-y2;
@@ -27,4 +32,5 @@ function [ Oimg,ma ] = flattening( Iimg )
     Oimg=Iimg;
     ma=mean(data);
 end
+
 
