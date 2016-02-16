@@ -1,4 +1,4 @@
-function [ Oimg ] = denoising( Iimg )
+function [ Oimg ] = denoising( Iimg, sigma )
 %DENOISING Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -6,7 +6,6 @@ function [ Oimg ] = denoising( Iimg )
     addpath(../../../third-party/BM3D);
     
     Iimg=uint8(Iimg);
-    sigma = std2(Iimg(800:900,100:200));
     [t,Oimg] = BM3D(1, Iimg,sigma);
 end
 

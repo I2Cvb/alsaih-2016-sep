@@ -20,7 +20,8 @@ for i = 1 : size(file,1)
     for j = 1 : 128
         a = vol(:,:,j);
         %denoise image
-        a = denoising(a);
+	sigma=190;
+        a = denoising(a, sigma);
         %flatten the image
         [a,ma] = flattening(a);
         %crop the image
