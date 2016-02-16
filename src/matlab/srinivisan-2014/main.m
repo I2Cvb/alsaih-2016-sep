@@ -7,7 +7,7 @@ file = dir('/data/retinopathy/OCT/SERI/original_data/*.img');
 p = 1;
 q = 1;
 %read the label file
-[n,s,c]=xlsread('data.csv');
+[n,s,c]=xlsread('../../../data/data.csv');
 s=char(s{2:size(s,1),1});
 for i = 1 : size(file,1)
     % read a volume
