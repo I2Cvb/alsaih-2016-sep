@@ -1,4 +1,4 @@
-function [ Oimg ] = crop( Iimg,ma )
+function [ Oimg ] = crop( Iimg, ma )
 %CROP Summary of this function goes here
 %   Detailed explanation goes here
 
