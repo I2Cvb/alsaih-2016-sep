@@ -15,10 +15,6 @@ function [ Oimg,ma ] = flattening( Iimg )
         data(i)=NaN;
     else
     data(i)=tt(length(tt));
-    if length(tt)==0
-      data(i)=NaN;
-    else
-      data(i)=tt(length(tt));
     end
     end
 
