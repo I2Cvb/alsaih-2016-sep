@@ -1,4 +1,6 @@
 clear all;
+close all;
+clc;
 
 % Add the path for the function
 addpath('../util');
@@ -16,12 +18,14 @@ z_size = 1024;
 % Convert to double
 vol = vol / max( vol(:) );
 
-% Denoise the first image 
+% Define a fix sigma value 
 sigma = 190. / 255.;
-img_out = denoising( vol( :, :, 1 ), sigma );
 
-% Show the original image
-figure( 1 );
-imshow( vol( :, :, 1) );
-figure( 2 );
-imshow( img_out );
+% We will make a parallel processing
+vol_out = zeros( size(vol) );
+
+parfor sl = 1 : size(vol, 3)
+    if sl <= size(vol, 3)
+        denoising( vol(:, :, sl), sigma );
+    end
+end
