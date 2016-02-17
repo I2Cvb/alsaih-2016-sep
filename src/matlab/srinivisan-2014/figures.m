@@ -1,6 +1,7 @@
 clear all
 clc
 tic
+
 [a] = read_oct_volume('PCS57635OS.img',512,128,1024);
 
 a=uint8(a(:,:,1));
