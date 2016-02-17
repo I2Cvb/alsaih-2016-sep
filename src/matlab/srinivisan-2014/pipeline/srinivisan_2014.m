@@ -23,6 +23,8 @@ sigma = 190. / 255.;
 
 poolobj = parpool('local', 40);
 
-vol_out = denoising_volume(vol, sigma);
+vol_denoised = denoising_volume( vol, sigma );
+
+vol_flattened = flattening_volume( vol_denoised );
 
 delete(poolobj);
