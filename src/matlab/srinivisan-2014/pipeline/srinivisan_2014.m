@@ -12,7 +12,7 @@ y_size = 128;
 z_size = 1024;
 
 % Read the volume
-[ vol ] = read_oct_volume( '../../../../data/PCS57635OS.img', x_size, ...
+[ vol ] = read_oct_volume( '../../../../data/P741009OS.img', x_size, ...
           y_size, z_size );
 
 % Convert to double
@@ -21,11 +21,8 @@ vol = vol / max( vol(:) );
 % Define a fix sigma value 
 sigma = 190. / 255.;
 
-% We will make a parallel processing
-vol_out = zeros( size(vol) );
+poolobj = parpool('local', 40);
 
-parfor sl = 1 : size(vol, 3)
-    if sl <= size(vol, 3)
-        denoising( vol(:, :, sl), sigma );
-    end
-end
+vol_out = denoising_volume(vol, sigma);
+
+delete(poolobj);
