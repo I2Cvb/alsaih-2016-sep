@@ -19,7 +19,7 @@ function [ feature_mat_vol ] = extract_hog_volume( in_vol, pyr_num_lev, CellSize
     % Pre-allocate feature_mat_vol
     feature_mat_vol = zeros( size(in_vol, 3), feat_dim );
 
-    for sl = 1 : size(in_vol, 3)
+    parfor sl = 1 : size(in_vol, 3)
         if ( sl <= size(in_vol, 3) )
             feature_mat_vol(sl, :) = extract_hog_image( in_vol(:, :, sl), ...
                                                         pyr_num_lev, ...
@@ -67,8 +67,6 @@ function [ feature_vec_img ] = extract_hog_image( in_img, pyr_num_lev, CellSize,
                                BlockOverlap);
 
     end
-
-    disp(size(feature_vec_img));
 
 end
 
