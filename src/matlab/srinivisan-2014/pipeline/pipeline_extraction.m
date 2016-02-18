@@ -9,7 +9,8 @@ addpath('../detection');
 data_directory = ['/data/retinopathy/OCT/SERI/pre_processed_data/' ...
                   'srinivasan_2014/'];
 store_directory = ['/data/retinopathy/OCT/SERI/feature_data/' ...
-                  'srinivasan_2014/'];
+                   'srinivasan_2014/'];
+directory_info = dir(data_directory);
 
 poolobj = parpool('local', 40);
 
