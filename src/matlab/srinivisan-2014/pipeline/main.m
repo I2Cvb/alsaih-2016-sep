@@ -4,6 +4,7 @@ close all
 
 %read all file names in db folder
 file = dir('/data/retinopathy/OCT/SERI/original_data/*.img');
+disp(dir('/data/retinopathy/OCT/SERI/original_data/*'));
 p = 1;
 q = 1;
 %read the label file
@@ -47,14 +48,14 @@ for i = 1 : 128 :size(nfeature,1)
     ddfeature(i:i+127,:) = [];
     nnfeature(i:i+127,:) = [];
     trset = [ddfeature(1:size(ddfeature,1)-1,:);nnfeature(1:size(nnfeature,1)-1,:)];
-    tset = [ddfeature(:,size(ddfeature,2));nnfeature(:,size(nnfeature,2))];
+    tset = [ddfeature(:,size(ddfeature,2));nnfeature(:,size(nnfeature,2),:)];
     SVMStruct = svmtrain(trset,tset);
     Group = svmclassify(SVMStruct,dfeature(i:i+127,:));
-    if mode(Group) == -1
+    if mode(Group) == 1
         dcorrect = dcorrect +1;
     end
     Group = svmclassify(SVMStruct,nfeature(i:i+127,:));
-    if mode(Group) == 1
+    if mode(Group) == -1
         ncorrect = ncorrect +1;
     end
 end
