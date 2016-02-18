@@ -21,12 +21,12 @@ width_crop = 340;
 
 % Define the data directory
 data_directory = '/data/retinopathy/OCT/SERI/original_data/';
-store_directory = '/data/retinopathy/OCT/SERI/pre_processed_data/srinivasan_2014/'
+store_directory = '/data/retinopathy/OCT/SERI/pre_processed_data/srinivasan_2014/';
 directory_info = dir(data_directory);
 
 poolobj = parpool('local', 40);
 
-for idx_file = 1:size(data_directory)
+for idx_file = 1:size(directory_info)
 
     % Get only of the extension is .img
     if ( ~isempty( strfind( directory_info(idx_file).name, '.img' ) ...
@@ -43,14 +43,23 @@ for idx_file = 1:size(data_directory)
 
         % Apply the preprocessing
         vol_denoised = denoising_volume( vol, sigma );
-        [ baseline_vol, vol_flattened ] = flattening_volume( vol_denoised );
+        disp( [ 'Image ', directory_info(idx_file).name, ' denoised' ] ...
+             );
+        [ baseline_vol, vol_flattened ] = flattening_volume( ...
+            vol_denoised );
+        disp( [ 'Image ', directory_info(idx_file).name, ' flattened' ] ...
+             );
         vol_cropped = crop_volume( vol_flattened, baseline_vol, h_over_rpe, ...
                                    h_under_rpe, width_crop );
+        disp( [ 'Image ', directory_info(idx_file).name, ' cropped' ] ...
+             );
 
         % Store the volume inside a mat file
         store_filename = strcat( store_directory, strrep( ...
             directory_info(idx_file).name, '.img', '.mat' ) );
         save( store_filename, 'vol_cropped' );
+        disp( [ 'Image ', directory_info(idx_file).name, [' cropped ' ...
+                            'was stored' ] );
 
     end
 
