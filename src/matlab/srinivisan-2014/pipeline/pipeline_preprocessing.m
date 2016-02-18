@@ -30,7 +30,7 @@ poolobj = parpool('local', 40);
 
 vol_denoised = denoising_volume( vol, sigma );
 
-[ basline_vol, vol_flattened ] = flattening_volume( vol_denoised );
+[ baseline_vol, vol_flattened ] = flattening_volume( vol_denoised );
 
 vol_cropped = crop_volume( vol_flattened, baseline_vol, h_over_rpe, ...
                            h_under_rpe, width_crop );
