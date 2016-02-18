@@ -4,15 +4,15 @@ function [ out_vol ] = crop_volume( in_vol, basline_vol, h_over_rpe, h_under_rpe
     % Pre-allocate the volume
     % Check what is the width to avoid any inconsistance
     if ( width > ( size(in_vol, 2) - 2 ) )
-        out_vol = zeros( h_over_rpe + h_under_rpe, ...
+        out_vol = zeros( h_over_rpe + h_under_rpe + 1, ...
                          size(in_vol, 2), ... 
                          size(in_vol, 3) );
     else
-        out_vol = zeros( h_over_rpe + h_under_rpe, ...
-                         width, ... 
+        out_vol = zeros( h_over_rpe + h_under_rpe + 1, ...
+                         width + 1, ... 
                          size(in_vol, 3) );
     end
-    
+
     parfor sl = 1 : size(in_vol, 3)
         if (sl <= size(in_vol, 3) ) || ( sl <= lentgh( baseline_vol ) )
             out_vol(:, :, sl) = crop_image( in_vol(:, :, sl), ...
@@ -28,8 +28,7 @@ end
 function [ out_img ] = crop_image( in_img, baseline_img, h_over_rpe, h_under_rpe, width)
 
     % Check that the dimension parameters are meaningful
-    if ( h_over_rpe < 0 ) || ( h_under_rpe < 0 ) || ( width < 0 ) | ...
-            | ( width > size(in_img, 2) )
+    if ( h_over_rpe < 0 ) || ( h_under_rpe < 0 ) || ( width < 0 ) || ( width > size(in_img, 2) )
         error(['The dimension given to crop the image are inconsistent.']);
     end
     % Check that the dimension allow a cropping

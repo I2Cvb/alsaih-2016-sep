@@ -6,7 +6,7 @@ function [ baseline_vol, warped_vol ] = flattening_volume( in_vol )
     baseline_vol = zeros( size(in_vol, 3) );
     parfor sl = 1 : size(in_vol, 3)
         if sl <= size(in_vol, 3)
-            [ baseline_vol(sl), out_vol(:, :, sl) ] = flattening_image( in_vol(:, :, sl) );
+            [ baseline_vol(sl), warped_vol(:, :, sl) ] = flattening_image( in_vol(:, :, sl) );
         end
     end
 
