@@ -21,10 +21,18 @@ vol = vol / max( vol(:) );
 % Define a fix sigma value 
 sigma = 190. / 255.;
 
+% Define the parameters for the cropping
+h_over_rpe = 90;
+h_under_rpe = 30;
+width_crop = 340;
+
 poolobj = parpool('local', 40);
 
 vol_denoised = denoising_volume( vol, sigma );
 
-vol_flattened = flattening_volume( vol_denoised );
+[ basline_vol, vol_flattened ] = flattening_volume( vol_denoised );
+
+vol_cropped = crop_volume( vol_flattened, baseline_vol, h_over_rpe, ...
+                           h_under_rpe, width_crop );
 
 delete(poolobj);
