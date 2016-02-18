@@ -4,7 +4,7 @@ function [ baseline_vol, warped_vol ] = flattening_volume( in_vol )
     % Pre-allocate the volume
     warped_vol = zeros( size(in_vol) );
     baseline_vol = zeros( size(in_vol, 3) );
-    parfor sl = 1 : size(in_vol, 3)
+    for sl = 1 : size(in_vol, 3)
         if sl <= size(in_vol, 3)
             [ baseline_vol(sl), warped_vol(:, :, sl) ] = flattening_image( in_vol(:, :, sl) );
         end
@@ -37,7 +37,7 @@ function [ baseline_y, warped_img ] = flattening_image( in_img )
     point_poly = round( polyval( poly_f, 1:size(in_img,2) ) );
 
     % Find the minum of the baselin to realign everything
-    baseline_y = min(point_poly);
+    baseline_y = max(point_poly);
 
     warped_img = zeros(size(in_img));
 
