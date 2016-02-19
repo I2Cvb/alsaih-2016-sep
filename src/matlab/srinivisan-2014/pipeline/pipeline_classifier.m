@@ -2,7 +2,7 @@ clc
 clear all
 
 file = dir('/data/retinopathy/OCT/SERI/feature_data/srinivasan_2014/*.mat');
-[n,s,c]=xlsread('data.csv');
+[n,s,c]=xlsread('../../../../data/data.csv');
 s=char(s{2:size(s,1),1});
 train_set = []; 
 test_set = []; 
@@ -11,7 +11,8 @@ test_label = [];
 %%% Loading the test set 
 for i = 1 : 2
     temp=find(strncmp( cellstr(s), strtok(file(i).name,'.'), length(strtok(file(i).name,'.'))));
-    load file(i).name
+disp(file(i).name);
+load (file(i).name);
           if n(temp)==1
               test_set = [test_set; hog_feat]; 
               label_tem = ones(128,1); 
