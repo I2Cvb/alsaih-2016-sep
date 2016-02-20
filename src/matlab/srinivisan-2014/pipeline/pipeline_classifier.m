@@ -97,4 +97,6 @@ for idx_cv_lpo = 1:length(idx_class_pos)
     disp('Applied majority voting');
 end
 
-delete(poolobj);
+save(strcat(store_directory, 'predicition.mat'));
+
+%delete(poolobj);
