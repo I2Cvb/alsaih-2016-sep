@@ -23,14 +23,15 @@ data_label = [ raw_data{ 2:end, 2 } ];
 idx_class_pos = find( data_label ==  1 );
 idx_class_neg = find( data_label == -1 );
 
+% poolobj = parpool('local', 48);
+
 % Pre-allocate where the data will be locate
 pred_label_cv = zeros( length(idx_class_pos), 2 );
 
-% poolobj = parpool('local', 40);
-
-% Cross-validation using Leave-Two-Patients-Out using a parallel
-% for (not right now thought)
+% Cross-validation using Leave-Two-Patients-Out
 for idx_cv_lpo = 1:length(idx_class_pos)
+    disp([ 'Round #', num2str(idx_cv_lpo), ' of the L2PO']);
+
     % The two patients for testing will corresspond to the current
     % index of the cross-validation
 
@@ -39,18 +40,20 @@ for idx_cv_lpo = 1:length(idx_class_pos)
     testing_label = [];
     % Load the positive patient
     load( strcat( data_directory, filename{ idx_class_pos(idx_cv_lpo) ...
-                   } } ) );
+                   } ) );
     % Concatenate the data
     testing_data = [ testing_data ; hog_feat ];
     % Create and concatenate the label
-    testing_label = [ testing_label ones(size(hog_feat, 1)) ];
+    testing_label = [ testing_label ones(1, size(hog_feat, 1)) ];
     % Load the negative patient
     load( strcat( data_directory, filename{ idx_class_neg(idx_cv_lpo) ...
-                   } } ) );
+                   } ) );
     % Concatenate the data
     testing_data = [ testing_data ; hog_feat ];
     % Create and concatenate the label
-    testing_label = [ testing_label (-1 * ones(size(hog_feat, 1))) ];
+    testing_label = [ testing_label ( -1 * ones(1, size(hog_feat, 1))) ];
+
+    disp('Created the testing set');
 
     % CREATE THE TRAINING SET
     training_data = [];
@@ -61,33 +64,37 @@ for idx_cv_lpo = 1:length(idx_class_pos)
         if ( tr_idx ~= idx_cv_lpo)
             % Load the positive patient
             load( strcat( data_directory, filename{ idx_class_pos(tr_idx) ...
-                   } } ) );
+                   } ) );
             % Concatenate the data
             training_data = [ training_data ; hog_feat ];
             % Create and concatenate the label
-            training_label = [ training_label ones(size(hog_feat, 1)) ];
+            training_label = [ training_label ones(1, size(hog_feat, 1)) ];
             % Load the negative patient
             load( strcat( data_directory, filename{ idx_class_neg(tr_idx) ...
-                   } } ) );
+                   } ) );
             % Concatenate the data
             training_data = [ training_data ; hog_feat ];
             % Create and concatenate the label
-            training_label = [ training_label (-1 * ones(size(hog_feat, 1))) ];
+            training_label = [ training_label (-1 * ones(1, size(hog_feat, 1))) ];
         end
     end
 
+    disp('Created the training set');
+
     % Perform the training of the SVM
     svmStruct = svmtrain( training_data, training_label );
+    disp('Trained SVM classifier');
     % Test the performance of the SVM
     pred_label = svmclassify(svmStruct, testing_data);
+    disp('Tested SVM classifier');
 
     % We need to split the data to get a prediction for each volume
     % tested
-    pred_label_cv( idx_cv_lpo, 1 ) = mode( pred_label(1:length(hog_feat)) ...
-                                           );
-    pred_label_cv( idx_cv_lpo, 2 ) = mode( pred_label(length(hog_feat) ...
-                                                      + 1 : end ) ...
-                                           ); 
+    % Compute the majority voting for each testing volume
+    maj_vot = [ mode( pred_label(1:size(hog_feat,1)) ) ...
+                mode( pred_label(size(hog_feat, 1) + 1:end) )];
+    pred_label_cv( idx_cv_lpo, : ) = maj_vot;    
+    disp('Applied majority voting');
 end
 
-% delete(poolobj);
+delete(poolobj);
