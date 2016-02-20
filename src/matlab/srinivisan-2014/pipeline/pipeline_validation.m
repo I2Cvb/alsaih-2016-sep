@@ -30,7 +30,7 @@ end
 
 % Load the results data
 results_filename = ['/data/retinopathy/OCT/SERI/results/' ...
-                    'srinivasan_2014/prediction.mat'];
+                    'srinivasan_2014/predicition.mat'];
 load(results_filename);
 
 % Linearize the vector loaded
@@ -42,11 +42,11 @@ pred_label = pred_label(:);
     pred_label, gt_label );
 
 % Display the information
-disp( ['Sensitivity: ',                     sens] );
-disp( ['Specificity: ',                     spec] );
-disp( ['Precision: ',                       prec] );
-disp( ['Negative Predictive Value: ',       npv] );
-disp( ['Accuracy: ',                        acc] );
-disp( ['F1-score: ',                        f1s] );
-disp( ['Matthew Correlation Coefficiant: ', mcc] );
-disp( ['Geometric Mean: ',                  gmean] );
+disp( ['Sensitivity: ',                     num2str(sens)] );
+disp( ['Specificity: ',                     num2str(spec)] );
+disp( ['Precision: ',                       num2str(prec)] );
+disp( ['Negative Predictive Value: ',       num2str(npv)] );
+disp( ['Accuracy: ',                        num2str(acc)] );
+disp( ['F1-score: ',                        num2str(f1s)] );
+disp( ['Matthew Correlation Coefficiant: ', num2str(mcc)] );
+disp( ['Geometric Mean: ',                  num2str(gmean)] );
