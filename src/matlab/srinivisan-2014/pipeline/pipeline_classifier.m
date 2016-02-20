@@ -8,7 +8,7 @@ data_directory = ['/data/retinopathy/OCT/SERI/feature_data/' ...
                   'srinivasan_2014/'];
 % Location to store the results
 store_directory = ['/data/retinopathy/OCT/SERI/results/' ...
-                   'srinivasan_2014'];
+                   'srinivasan_2014/'];
 % Location of the ground-truth
 gt_file = '../../../../data/data.csv';
 
