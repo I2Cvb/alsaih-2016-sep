@@ -38,7 +38,7 @@ pred_label = pred_label_cv';
 pred_label = pred_label(:);
 
 % Get the statistic 
-[ sens, spec, prec, npv, acc, f1s, mcc, gmean ] = metric_confusion_matrix( ...
+[ sens, spec, prec, npv, acc, f1s, mcc, gmean, cm ] = metric_confusion_matrix( ...
     pred_label, gt_label );
 
 % Display the information

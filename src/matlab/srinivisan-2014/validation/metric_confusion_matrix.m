@@ -1,4 +1,4 @@
-function [ sens, spec, prec, npv, acc, f1s, mcc, gmean ] = metric_confusion_matrix( pred_label, true_label )
+function [ sens, spec, prec, npv, acc, f1s, mcc, gmean, cm ] = metric_confusion_matrix( pred_label, true_label )
 
     % Compute the confusion matrix
     cm = confusionmat( true_label, pred_label, 'order', [-1 1]);

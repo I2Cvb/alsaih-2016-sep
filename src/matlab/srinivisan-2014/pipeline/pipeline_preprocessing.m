@@ -15,7 +15,7 @@ z_size = 1024;
 sigma = 190. / 255.;
 
 % Define the parameters for the cropping
-h_over_rpe = 90;
+h_over_rpe = 325;
 h_under_rpe = 30;
 width_crop = 340;
 

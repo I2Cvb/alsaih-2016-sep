@@ -32,14 +32,17 @@ function [ out_img ] = crop_image( in_img, baseline_img, h_over_rpe, h_under_rpe
         error(['The dimension given to crop the image are inconsistent.']);
     end
     % Check that the dimension allow a cropping
-    if ( ( baseline_img - h_over_rpe ) < 0 ) || ( ( baseline_img + ...
+    if ( ( baseline_img - h_over_rpe ) <= 0 ) || ( ( baseline_img + ...
                                                     h_under_rpe ) > ...
                                                   size(in_img, 1) )
-	disp(baseline_img - h_over_rpe);
-        disp(baseline_img + h_under_rpe);
-	error(['The dimension heights dimension are inconsistent to ' ...
-               'make a cropping.']);
-    end
+					%	  disp(baseline_img)
+
+                h_over_rpe = baseline_img -1;
+                %disp(h_over_rpe)
+                h_under_rpe = 356 - h_over_rpe - 1;
+               % disp(h_under_rpe)
+	%	size(in_img)
+       end
 
     % Crop the image
     % To avoid problem of rounding with the center
