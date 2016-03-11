@@ -86,10 +86,10 @@ for idx_cv_lpo = 1:length(idx_class_pos)
     [coeff, score, latent, tsquared, explained, mu] = ...
         pca(training_data, 'NumComponents', 40);
     % Apply the transformation to the training data
-    training_data = score   
+    training_data = score;
     % Apply the transformation to the testing data
     % Remove the mean computed during the training of the PCA
-    training_data = (bsxfun(@minus, training_data, mu)) * coeff;
+    testing_data = (bsxfun(@minus, testing_data, mu)) * coeff;
     
     % Perform the training of the SVM
     svmStruct = svmtrain( training_data, training_label );
