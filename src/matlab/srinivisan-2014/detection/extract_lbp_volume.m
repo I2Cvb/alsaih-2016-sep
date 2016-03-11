@@ -65,7 +65,7 @@ function [ feature_vec_img ] = extract_lbp_image( in_img, pyr_num_lev, NumNeighb
         % Compute the HOG feature
         feature_vec_img( cum_feat_dim(lev) + 1 : cum_feat_dim(lev + 1) ) = ...
             extractLBPFeatures(im_rsz, 'NumNeighbors', NumNeighbors, ...
-                               'Radius', Radius, 'CellSize', Cellsize);
+                               'Radius', Radius, 'CellSize', CellSize);
 
     end
 
