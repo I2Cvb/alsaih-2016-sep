@@ -13,15 +13,15 @@ function [ feature_mat_vol ] = extract_lbp_volume( in_vol, pyr_num_lev, NumNeigh
         im_sz = ceil( [ size(in_vol, 1) size(in_vol, 2) ] / factor );
 
         % Compute the number of cell
-        numCells = prod(floor(im_sz / CellSize));
-        feat_dim = feat_dim + (numCells * (NumNeighbors * (NumNeighbors ...
+        numCells = prod(floor(im_sz ./ CellSize));
+        feat_dim = feat_dim + numCells * ((NumNeighbors * (NumNeighbors ...
                                            - 1)) + 3);
     end
 
     % Pre-allocate feature_mat_vol
     feature_mat_vol = zeros( size(in_vol, 3), feat_dim );
 
-    parfor sl = 1 : size(in_vol, 3)
+    for sl = 1 : size(in_vol, 3)
         if ( sl <= size(in_vol, 3) )
             feature_mat_vol(sl, :) = extract_lbp_image( in_vol(:, :, sl), ...
                                                         pyr_num_lev, ...
@@ -45,9 +45,9 @@ function [ feature_vec_img ] = extract_lbp_image( in_img, pyr_num_lev, NumNeighb
         im_sz = ceil( size(in_img) / factor );
        
         % Compute the number of cell
-        numCells = prod(floor(im_sz / CellSize));
-        feat_dim = feat_dim + (numCells * (NumNeighbors * (NumNeighbors ...
-                                           - 1)) + 3);
+        numCells = prod(floor(im_sz ./ CellSize));
+        feat_dim = [ feat_dim, numCells * ((NumNeighbors * (NumNeighbors ...
+                                           - 1)) + 3) ];
     end
 
     % Make the allocation
