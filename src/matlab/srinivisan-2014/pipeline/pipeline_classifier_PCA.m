@@ -81,23 +81,30 @@ for idx_cv_lpo = 1:length(idx_class_pos)
 
     disp('Created the training set');
 
-    [coeff,score,latent,tsquared,explained,mu] = pca(training_data);
-    disp(explained);
+    % Make PCA decomposition keeping the 40 first components which
+    % are the one > than 0.1 % of significance
+    [coeff, score, latent, tsquared, explained, mu] = ...
+        pca(training_data, 'NumComponents', 40);
+    % Apply the transformation to the training data
+    training_data = score   
+    % Apply the transformation to the testing data
+    % Remove the mean computed during the training of the PCA
+    training_data = (bsxfun(@minus, training_data, mu)) * coeff;
+    
+    % Perform the training of the SVM
+    svmStruct = svmtrain( training_data, training_label );
+    disp('Trained SVM classifier');
+    % Test the performance of the SVM
+    pred_label = svmclassify(svmStruct, testing_data);
+    disp('Tested SVM classifier');
 
-    % % Perform the training of the SVM
-    % svmStruct = svmtrain( training_data, training_label );
-    % disp('Trained SVM classifier');
-    % % Test the performance of the SVM
-    % pred_label = svmclassify(svmStruct, testing_data);
-    % disp('Tested SVM classifier');
-
-    % % We need to split the data to get a prediction for each volume
-    % % tested
-    % % Compute the majority voting for each testing volume
-    % maj_vot = [ mode( pred_label(1:size(hog_feat,1)) ) ...
-    %             mode( pred_label(size(hog_feat, 1) + 1:end) )];
-    % pred_label_cv( idx_cv_lpo, : ) = maj_vot;    
-    % disp('Applied majority voting');
+    % We need to split the data to get a prediction for each volume
+    % tested
+    % Compute the majority voting for each testing volume
+    maj_vot = [ mode( pred_label(1:size(hog_feat,1)) ) ...
+                mode( pred_label(size(hog_feat, 1) + 1:end) )];
+    pred_label_cv( idx_cv_lpo, : ) = maj_vot;    
+    disp('Applied majority voting');
 end
 
 save(strcat(store_directory, 'predicition_PCA.mat'), 'pred_label_cv');
