@@ -92,10 +92,12 @@ for idx_cv_lpo = 1:length(idx_class_pos)
     testing_data = (bsxfun(@minus, testing_data, mu)) * coeff;
     
     % Perform the training of the SVM
-    svmStruct = svmtrain( training_data, training_label );
+    % svmStruct = svmtrain( training_data, training_label );
+    SVMModel = fitcsvm(training_data, training_label);
     disp('Trained SVM classifier');
     % Test the performance of the SVM
-    pred_label = svmclassify(svmStruct, testing_data);
+    % pred_label = svmclassify(svmStruct, testing_data);
+    pred_label = predict(SVMModel, testing_data);
     disp('Tested SVM classifier');
 
     % We need to split the data to get a prediction for each volume
