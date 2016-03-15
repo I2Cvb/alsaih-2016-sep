@@ -1,4 +1,4 @@
-function [ feature_mat_vol ] = extract_lbp_volume( in_vol, pyr_num_lev, NumNeighbors, Radius, CellSize )
+function [ feature_mat_vol ] = extract_lbp_volume( in_vol, pyr_num_lev, NumNeighbors, Radius, CellSize, Upright )
 
     % Check the number of level in the pyramid is meaningful
     if pyr_num_lev < 0
@@ -14,8 +14,12 @@ function [ feature_mat_vol ] = extract_lbp_volume( in_vol, pyr_num_lev, NumNeigh
 
         % Compute the number of cell
         numCells = prod(floor(im_sz ./ CellSize));
-        feat_dim = feat_dim + numCells * ((NumNeighbors * (NumNeighbors ...
-                                           - 1)) + 3);
+        if Upright == true
+            feat_dim = feat_dim + numCells * ((NumNeighbors * (NumNeighbors ...
+                                                              - 1)) + 3);
+        else
+            feat_dim = feat_dim + numCells * (NumNeighbors + 2);
+        end
     end
 
     % Pre-allocate feature_mat_vol
@@ -27,13 +31,14 @@ function [ feature_mat_vol ] = extract_lbp_volume( in_vol, pyr_num_lev, NumNeigh
                                                         pyr_num_lev, ...
                                                         NumNeighbors, ...
                                                         Radius, ...
-                                                        CellSize );
+                                                        CellSize, ...
+                                                        Upright );
         end
     end    
 
 end
 
-function [ feature_vec_img ] = extract_lbp_image( in_img, pyr_num_lev, NumNeighbors, Radius, CellSize )
+function [ feature_vec_img ] = extract_lbp_image( in_img, pyr_num_lev, NumNeighbors, Radius, CellSize, Upright )
 
     % Compute the size of the descriptor to make pre-allocation to
     % speed-up
@@ -46,8 +51,12 @@ function [ feature_vec_img ] = extract_lbp_image( in_img, pyr_num_lev, NumNeighb
        
         % Compute the number of cell
         numCells = prod(floor(im_sz ./ CellSize));
-        feat_dim = [ feat_dim, numCells * ((NumNeighbors * (NumNeighbors ...
-                                           - 1)) + 3) ];
+        if Upright == true
+            feat_dim = [ feat_dim, numCells * ((NumNeighbors * (NumNeighbors ...
+                                                              - 1)) + 3) ];
+        else
+            feat_dim = [ feat_dim, numCells * (NumNeighbors + 2) ];
+        end
     end
 
     % Make the allocation
@@ -65,7 +74,8 @@ function [ feature_vec_img ] = extract_lbp_image( in_img, pyr_num_lev, NumNeighb
         % Compute the HOG feature
         feature_vec_img( cum_feat_dim(lev) + 1 : cum_feat_dim(lev + 1) ) = ...
             extractLBPFeatures(im_rsz, 'NumNeighbors', NumNeighbors, ...
-                               'Radius', Radius, 'CellSize', CellSize);
+                               'Radius', Radius, 'CellSize', CellSize, ...
+                               'Upright', Upright);
 
     end
 

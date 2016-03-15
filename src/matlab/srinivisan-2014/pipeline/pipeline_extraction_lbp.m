@@ -9,7 +9,7 @@ addpath('../detection');
 data_directory = ['/data/retinopathy/OCT/SERI/pre_processed_data/' ...
                   'srinivasan_2014/'];
 store_directory = ['/data/retinopathy/OCT/SERI/feature_data/' ...
-                   'srinivasan_2014_lbp/'];
+                   'srinivasan_2014/lbp_8_1_ri/'];
 directory_info = dir(data_directory);
 
 poolobj = parpool('local', 40);
@@ -31,9 +31,11 @@ for idx_file = 1:size(directory_info)
         NumNeighbors = 8;
         Radius = 1;
         CellSize = [32 32];
+        Upright = false;
 
         lbp_feat = extract_lbp_volume( vol_cropped, pyr_num_lev, ...
-                                       NumNeighbors, Radius, CellSize );
+                                       NumNeighbors, Radius, ...
+                                       CellSize, Upright);
         disp( [ 'Feature for file  ', directory_info(idx_file).name, ...
                 ' extracted' ] );
 
