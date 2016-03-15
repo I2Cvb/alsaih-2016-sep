@@ -83,7 +83,7 @@ for tr_idx = 1:length(idx_class_pos)
 mn = mean(training_data);
 training_data = bsxfun(@minus,training_data,mn); % substract mean
 [coefs,scores,variances] = princomp(training_data,'econ'); % PCA
-dims = 6000;
+dims = 100;
 training_data = training_data*coefs(:,1:dims); % dims - keep this many dimensions
     % Perform the training of the SVM
 svmStruct = svmtrain( training_data, training_label);

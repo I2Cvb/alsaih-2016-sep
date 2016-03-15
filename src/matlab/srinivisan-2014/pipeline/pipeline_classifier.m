@@ -80,8 +80,6 @@ for idx_cv_lpo = 1:length(idx_class_pos)
     end
 
     disp('Created the training set');
-
-    % Perform the training of the SVM
     svmStruct = svmtrain( training_data, training_label );
     disp('Trained SVM classifier');
     % Test the performance of the SVM
