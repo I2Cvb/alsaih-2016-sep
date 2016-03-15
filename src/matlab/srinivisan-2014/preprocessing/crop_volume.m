@@ -35,14 +35,17 @@ function [ out_img ] = crop_image( in_img, baseline_img, h_over_rpe, h_under_rpe
     if ( ( baseline_img - h_over_rpe ) <= 0 ) || ( ( baseline_img + ...
                                                     h_under_rpe ) > ...
                                                   size(in_img, 1) )
-					%	  disp(baseline_img)
-
-                h_over_rpe = baseline_img -1;
-                %disp(h_over_rpe)
-                h_under_rpe = 356 - h_over_rpe - 1;
-               % disp(h_under_rpe)
-	%	size(in_img)
-       end
+        warning(['The cropping area will not be based on the baseline ' ...
+                 'due to cropping area constraints. Everything will ' ...
+                 'go smooth.'])
+        if ( baseline_img - h_over_rpe ) <= 0
+            h_under_rpe = h_over_rpe - baseline_img - 1 + h_under_rpe
+            h_over_rpe = baseline_img - 1
+        elseif ( baseline_img + h_under_rpe ) > size(in_img, 1)
+            h_over_rpe = h_over_rpe + h_under_rpe - size(in,img, 1) - baseline
+            h_under_rpe = size(in,img, 1) - baseline
+        end
+    end
 
     % Crop the image
     % To avoid problem of rounding with the center
