@@ -1,11 +1,12 @@
 clear all;
 close all;
 clc;
+nTrees=80;
 
 % Give the information about the data location
 % Location of the features
 data_directory = ['/data/retinopathy/OCT/SERI/feature_data/' ...
-                  'srinivasan_2014/'];
+                  'srinivasan_2014/hog/'];
 % Location to store the results
 store_directory = ['/data/retinopathy/OCT/SERI/results/' ...
                    'srinivasan_2014/'];
@@ -93,12 +94,16 @@ for idx_cv_lpo = 1:length(idx_class_pos)
     
     % Perform the training of the SVM
     % svmStruct = svmtrain( training_data, training_label );
-    SVMModel = fitcsvm(training_data, training_label);
-    disp('Trained SVM classifier');
+    %SVMModel = fitcsvm(training_data, training_label);
+    % SVMModel = fitcsvm(training_data, training_label,'KernelFunction','rbf');
+B = TreeBagger(nTrees,training_data,training_label, 'Method', 'classification');    
+disp('Trained SVM classifier');
     % Test the performance of the SVM
     % pred_label = svmclassify(svmStruct, testing_data);
-    pred_label = predict(SVMModel, testing_data);
-    disp('Tested SVM classifier');
+    % pred_label = predict(SVMModel, testing_data);
+pred_label = B.predict(testing_data);
+pred_label = str2double(pred_label);   
+ disp('Tested SVM classifier');
 
     % We need to split the data to get a prediction for each volume
     % tested
@@ -109,6 +114,6 @@ for idx_cv_lpo = 1:length(idx_class_pos)
     disp('Applied majority voting');
 end
 
-save(strcat(store_directory, 'predicition_PCA.mat'), 'pred_label_cv');
+save(strcat(store_directory, 'predicition_PCA_Randfor.mat'), 'pred_label_cv');
 
 %delete(poolobj);

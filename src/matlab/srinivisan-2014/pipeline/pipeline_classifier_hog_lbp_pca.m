@@ -5,9 +5,9 @@ clc;
 % Give the information about the data location
 % Location of the features
 data_directory_hog = ['/data/retinopathy/OCT/SERI/feature_data/' ...
-                    'srinivasan_2014/'];
+                    'srinivasan_2014/hog/'];
 data_directory_lbp = ['/data/retinopathy/OCT/SERI/feature_data/' ...
-                    'srinivasan_2014_lbp/'];
+                    'srinivasan_2014/lbp_8_1_ri/'];
 % Location to store the results
 store_directory = ['/data/retinopathy/OCT/SERI/results/' ...
                    'srinivasan_2014/'];
@@ -151,7 +151,8 @@ for idx_cv_lpo = 1:length(idx_class_pos)
 
     % Perform the training of the SVM
     % svmStruct = svmtrain( training_data, training_label );
-    SVMModel = fitcsvm(training_data, training_label);
+     SVMModel = fitcsvm(training_data, training_label);
+    % SVMModel = fitcsvm(training_data, training_label,'KernelFunction','rbf');
     disp('Trained SVM classifier');
     % Test the performance of the SVM
     % pred_label = svmclassify(svmStruct, testing_data);
@@ -167,6 +168,6 @@ for idx_cv_lpo = 1:length(idx_class_pos)
     disp('Applied majority voting');
 end
 
-save(strcat(store_directory, 'predicition_hog_lbp_pca.mat'), 'pred_label_cv');
+save(strcat(store_directory, 'predicition_hog_lbp_pca_8rinew.mat'), 'pred_label_cv');
 
 %delete(poolobj);
