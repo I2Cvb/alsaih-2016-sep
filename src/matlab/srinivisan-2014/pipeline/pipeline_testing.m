@@ -5,7 +5,7 @@ nTrees=80;
 % Give the information about the data location
 % Location of the features
 data_directory_lbp = ['/data/retinopathy/OCT/SERI/feature_data/' ...
-							     'srinivasan_2014/lbp_8_1_ri/'];
+								 'srinivasan_2014/lbp_16_2_ri/'];
 % Location to store the results
 store_directory = ['/data/retinopathy/OCT/SERI/results/' ...
 							 'srinivasan_2014/'];
@@ -38,18 +38,19 @@ for idx_cv_lpo = 1:length(idx_class_pos)
  % FOR LBP FEATURES
     % CREATE THE TESTING SET
     testing_data_lbp = [];
-    testing_label_lbp= [];
+testing_label_lbp= [];
     % Load the positive patient
     load( strcat( data_directory_lbp, filename{ idx_class_pos(idx_cv_lpo) ...
 	    } ) );
     % Concatenate the data
     testing_data_lbp = [ testing_data_lbp ; lbp_feat ];
+testing_label_lbp = [ testing_label_lbp ones(1, size(lbp_feat, 1)) ];
     % Load the negative patient
     load( strcat( data_directory_lbp, filename{ idx_class_neg(idx_cv_lpo) ...
 	    } ) );
     % Concatenate the data
     testing_data_lbp = [ testing_data_lbp ; lbp_feat ];
-    testing_label_lbp = [ testing_label_lbp ( -1 * ones(1, size(lbp_feat, 1))) ];
+testing_label_lbp = [ testing_label_lbp ( -1 * ones(1, size(lbp_feat, 1))) ];
 disp('Created the testing set for LBP');
 
     % CREATE THE TRAINING SET
@@ -79,7 +80,7 @@ training_label_lbp = [ training_label_lbp (-1 * ones(1, size(lbp_feat, 1))) ];
     % Make PCA decomposition keeping the 20 first components which
     % are the one > than 0.5 % of significance
     %[coeff, score, latent, tsquared, explained, mu] = ...
-	 %    pca(training_data_lbp, 'NumComponents', 20);
+	  %    pca(training_data_lbp, 'NumComponents', 20);
     % Apply the transformation to the training data
     % training_data_lbp = score;
     % Apply the transformation to the testing data
@@ -87,8 +88,12 @@ training_label_lbp = [ training_label_lbp (-1 * ones(1, size(lbp_feat, 1))) ];
     %testing_data_lbp = (bsxfun(@minus, testing_data_lbp, mu)) * coeff;
     
 %disp('Projected the data using PCA for LBP');
-
-k=60;
+size(training_data_lbp)
+size(training_label_lbp)
+size(testing_data_lbp)
+size(testing_label_lbp)
+ 
+k = 60;
 [idxs C] = kmeans(training_data_lbp,k);
 temp_res=[];
 for mm = 1 : 128 :size(training_data_lbp,1)
@@ -115,6 +120,7 @@ end
 testing_data_lbp = temp_res;
 temps = [];
 for mm = 1 : 128 : size(testing_label_lbp,2)
+        mm
 	   temps = [temps mode(testing_label_lbp(mm:mm+127))];
 end
 testing_label_lbp = temps;
@@ -136,8 +142,8 @@ disp('Tested SVM classifier');
     % We need to split the data to get a prediction for each volume
     % tested
     % Compute the majority voting for each testing volume
-   % maj_vot = [ mode( pred_label(1:size(lbp_feat,1)) ) ...
-        %		  mode( pred_label(size(lbp_feat, 1) + 1:end) )];
+    % maj_vot = [ mode( pred_label(1:size(lbp_feat,1)) ) ...
+		    %  mode( pred_label(size(lbp_feat, 1) + 1:end) )];
 maj_vot = [pred_label(1) pred_label(2) ];
 pred_label_cv( idx_cv_lpo, : ) = maj_vot;    
 disp('Applied majority voting');

@@ -1,11 +1,11 @@
 clear all;
 close all;
 clc;
-nTrees=80;
+nTrees=100;
 % Give the information about the data location
 % Location of the features
 data_directory_lbp = ['/data/retinopathy/OCT/SERI/feature_data/' ...
-							     'srinivasan_2014/lbp_8_1_ri/'];
+								 'srinivasan_2014/lbp_16_2_ri/'];
 % Location to store the results
 store_directory = ['/data/retinopathy/OCT/SERI/results/' ...
 							 'srinivasan_2014/'];
@@ -38,18 +38,19 @@ for idx_cv_lpo = 1:length(idx_class_pos)
  % FOR LBP FEATURES
     % CREATE THE TESTING SET
     testing_data_lbp = [];
-    testing_label_lbp= [];
+testing_label_lbp= [];
     % Load the positive patient
     load( strcat( data_directory_lbp, filename{ idx_class_pos(idx_cv_lpo) ...
 	    } ) );
     % Concatenate the data
     testing_data_lbp = [ testing_data_lbp ; lbp_feat ];
+testing_label_lbp = [ testing_label_lbp ones(1, 1) ];
     % Load the negative patient
     load( strcat( data_directory_lbp, filename{ idx_class_neg(idx_cv_lpo) ...
 	    } ) );
     % Concatenate the data
     testing_data_lbp = [ testing_data_lbp ; lbp_feat ];
-    testing_label_lbp = [ testing_label_lbp ( -1 * ones(1, size(lbp_feat, 1))) ];
+testing_label_lbp = [ testing_label_lbp ( -1 * ones(1, 1)) ];
 disp('Created the testing set for LBP');
 
     % CREATE THE TRAINING SET
@@ -64,13 +65,13 @@ for tr_idx = 1:length(idx_class_pos)
 		    } ) );
             % Concatenate the data
             training_data_lbp = [ training_data_lbp ; lbp_feat ];
-training_label_lbp = [ training_label_lbp ones(1, size(lbp_feat, 1)) ];
+training_label_lbp = [ training_label_lbp ones(1,1) ];
             % Load the negative patient
             load( strcat( data_directory_lbp, filename{ idx_class_neg(tr_idx) ...
 		    } ) );
             % Concatenate the data
             training_data_lbp = [ training_data_lbp ; lbp_feat ];
-training_label_lbp = [ training_label_lbp (-1 * ones(1, size(lbp_feat, 1))) ];       
+training_label_lbp = [ training_label_lbp (-1 * ones(1, 1)) ];       
         end
     end
 
@@ -79,7 +80,7 @@ training_label_lbp = [ training_label_lbp (-1 * ones(1, size(lbp_feat, 1))) ];
     % Make PCA decomposition keeping the 20 first components which
     % are the one > than 0.5 % of significance
     %[coeff, score, latent, tsquared, explained, mu] = ...
-	 %    pca(training_data_lbp, 'NumComponents', 20);
+	  %    pca(training_data_lbp, 'NumComponents', 20);
     % Apply the transformation to the training data
     % training_data_lbp = score;
     % Apply the transformation to the testing data
@@ -87,39 +88,32 @@ training_label_lbp = [ training_label_lbp (-1 * ones(1, size(lbp_feat, 1))) ];
     %testing_data_lbp = (bsxfun(@minus, testing_data_lbp, mu)) * coeff;
     
 %disp('Projected the data using PCA for LBP');
-
-k=60;
+%size(training_data_lbp)
+%size(training_label_lbp)
+%size(testing_data_lbp)
+%size(testing_label_lbp)
+ 
+k = 60;
+Num_slice= 128;
 [idxs C] = kmeans(training_data_lbp,k);
-temp_res=[];
-for mm = 1 : 128 :size(training_data_lbp,1)
+training_histogram=[];
+for mm = 1 : Num_slice :size(training_data_lbp,1)
 	   [knn_idxs D] = knnsearch( C, training_data_lbp(mm:mm+127,:));
-temp = hist(knn_idxs,k);
-temp = temp ./ sum(temp);
-temp_res = [temp_res; temp];
+histogram = hist(knn_idxs,k);
+norm_histogram = histogram ./ sum(histogram);
+training_histogram = [training_histogram; norm_histogram];
 end
-training_data_lbp = temp_res;
-temps = [];
-%size(training_label)
-for mm = 1 : 128 : size(training_label_lbp,2)
-	   temps = [temps mode(training_label_lbp(mm:mm+127))];
-end
-% size(temps)
-training_label_lbp = temps;
-temp_res=[];
-for mm = 1 : 128 : size(testing_data_lbp,1)
-	   [knn_idxs D] = knnsearch( C, testing_data_lbp(mm:mm+127,:));
-temp = hist(knn_idxs,k);
-temp = temp ./ sum(temp);
-temp_res=[temp_res; temp];
-end
-testing_data_lbp = temp_res;
-temps = [];
-for mm = 1 : 128 : size(testing_label_lbp,2)
-	   temps = [temps mode(testing_label_lbp(mm:mm+127))];
-end
-testing_label_lbp = temps;
-   
+training_data_lbp = training_histogram;
 
+testing_histogram=[];
+for mm = 1 : Num_slice : size(testing_data_lbp,1)
+	   [knn_idxs D] = knnsearch( C, testing_data_lbp(mm:mm+127,:));
+histogram = hist(knn_idxs,k);
+norm_histogram = histogram ./ sum(histogram);
+testing_histogram=[testing_histogram; norm_histogram];
+end
+testing_data_lbp = testing_histogram;
+   
     % Perform the training of the SVM
     % svmStruct = svmtrain( training_data, training_label );
 %SVMModel = fitcsvm(training_data_lbp, training_label_lbp);
@@ -136,8 +130,8 @@ disp('Tested SVM classifier');
     % We need to split the data to get a prediction for each volume
     % tested
     % Compute the majority voting for each testing volume
-   % maj_vot = [ mode( pred_label(1:size(lbp_feat,1)) ) ...
-        %		  mode( pred_label(size(lbp_feat, 1) + 1:end) )];
+    % maj_vot = [ mode( pred_label(1:size(lbp_feat,1)) ) ...
+		    %  mode( pred_label(size(lbp_feat, 1) + 1:end) )];
 maj_vot = [pred_label(1) pred_label(2) ];
 pred_label_cv( idx_cv_lpo, : ) = maj_vot;    
 disp('Applied majority voting');
@@ -145,4 +139,4 @@ end
 
 save(strcat(store_directory, 'predicition_lbp_Randfor_BoW50_16ri.mat'), 'pred_label_cv');
 
-%delete(poolobj);
+%delete(poolobj

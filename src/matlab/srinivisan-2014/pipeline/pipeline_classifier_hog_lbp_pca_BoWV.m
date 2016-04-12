@@ -47,14 +47,14 @@ testing_label = [];
     % Concatenate the data
     testing_data_hog = [ testing_data_hog ; hog_feat ];
     % Create and concatenate the label
-    testing_label = [ testing_label ones(1, size(hog_feat, 1)) ];
+    testing_label = [ testing_label ones(1, 1) ];
     % Load the negative patient
     load( strcat( data_directory_hog, filename{ idx_class_neg(idx_cv_lpo) ...
 	    } ) );
     % Concatenate the data
     testing_data_hog = [ testing_data_hog ; hog_feat ];
     % Create and concatenate the label
-    testing_label = [ testing_label ( -1 * ones(1, size(hog_feat, 1))) ];
+    testing_label = [ testing_label ( -1 * ones(1, 1)) ];
 
 disp('Created the testing set for HOG');
 
@@ -71,14 +71,14 @@ for tr_idx = 1:length(idx_class_pos)
             % Concatenate the data
             training_data_hog = [ training_data_hog ; hog_feat ];
             % Create and concatenate the label
-            training_label = [ training_label ones(1, size(hog_feat, 1)) ];
+            training_label = [ training_label ones(1, 1) ];
             % Load the negative patient
             load( strcat( data_directory_hog, filename{ idx_class_neg(tr_idx) ...
 		    } ) );
             % Concatenate the data
             training_data_hog = [ training_data_hog ; hog_feat ];
             % Create and concatenate the label
-            training_label = [ training_label (-1 * ones(1, size(hog_feat, 1))) ];
+            training_label = [ training_label (-1 * ones(1, 1)) ];
         end
     end
 
@@ -152,34 +152,35 @@ testing_data = [ testing_data_hog, testing_data_lbp ];
 %size(testing_data)
 k = 60;
 [idxs C] = kmeans(training_data,k);
-temp_res=[];
-for mm = 1 : 128 :size(training_data,1)
-	   [knn_idxs D] = knnsearch( C, training_data(mm:mm+127,:));
-temp = hist(knn_idxs,k);
-temp = temp ./ sum(temp);
-temp_res = [temp_res; temp];
+training_histogram=[];
+for mm = 1 : size(hog_feat,1) :size(training_data,1)
+	   [knn_idxs D] = knnsearch( C, training_data(mm:mm+size(hog_feat,1)-1,:));
+histogram = hist(knn_idxs,k);
+norm_histogram = histogram ./ sum(histogram);
+training_histogram = [training_histogram; norm_histogram];
     end
-    training_data = temp_res;
-temps = [];
+    training_data = training_histogram;
+testing_histogram = [];
 %size(training_label)
-for mm = 1 : 128 : size(training_label,2)
-	   temps = [temps mode(training_label(mm:mm+127))];
-    end
+%for mm = 1 : 128 : size(training_label,2)
+%	   temps = [temps mode(training_label(mm:mm+127))];
+ %   end
    % size(temps)
-      training_label = temps;
-temp_res=[];
-for mm = 1 : 128 : size(testing_data,1)
-	   [knn_idxs D] = knnsearch( C, testing_data(mm:mm+127,:));
-temp = hist(knn_idxs,k);
-temp = temp ./ sum(temp);
-temp_res=[temp_res; temp];
+  %    training_label = temps;
+%temp_res=[];
+testing_histogram = [];
+for mm = 1 : size(hog_feat,1) : size(testing_data,1)
+	   [knn_idxs D] = knnsearch( C, testing_data(mm:mm+size(hog_feat,1)-1,:));
+histogram = hist(knn_idxs,k);
+norm_histogram = histogram ./ sum(histogram);
+temp_res=[testing_histogram; norm_histogram];
     end
-    testing_data = temp_res;
-temps = [];
-for mm = 1 : 128 : size(testing_label,2)
-	   temps = [temps mode(testing_label(mm:mm+127))];
-    end
-    testing_label = temps;
+    testing_data = testing_histogram;
+%temps = [];
+%for mm = 1 : 128 : size(testing_label,2)
+%	   temps = [temps mode(testing_label(mm:mm+127))];
+ %   end
+  %  testing_label = temps;
     % Perform the training of the SVM
     % svmStruct = svmtrain( training_data, training_label );
 SVMModel = fitcsvm(training_data, training_label);
