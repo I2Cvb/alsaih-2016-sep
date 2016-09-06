@@ -7,7 +7,7 @@ clc;
 data_directory_hog = ['/data/retinopathy/OCT/SERI/feature_data/' ...
                     'srinivasan_2014/hog/'];
 data_directory_lbp = ['/data/retinopathy/OCT/SERI/feature_data/' ...
-                    'srinivasan_2014/lbp_8_1_ri/'];
+                    'alsaih_2016/lbp_24_3_ri/'];
 % Location to store the results
 store_directory = ['/data/retinopathy/OCT/SERI/results/' ...
                    'srinivasan_2014/'];
@@ -168,6 +168,6 @@ for idx_cv_lpo = 1:length(idx_class_pos)
     disp('Applied majority voting');
 end
 
-save(strcat(store_directory, 'predicition_hog_lbp_pca_8rinew.mat'), 'pred_label_cv');
+save(strcat(store_directory, 'predicition_hog_lbp_pca_24rinew.mat'), 'pred_label_cv');
 
 %delete(poolobj);

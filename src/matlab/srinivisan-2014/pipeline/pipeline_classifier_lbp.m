@@ -1,11 +1,11 @@
 clear all;
 close all;
 clc;
-nTrees=80;
+%nTrees=80;
 % Give the information about the data location
 % Location of the features
 data_directory_lbp = ['/data/retinopathy/OCT/SERI/feature_data/' ...
-							     'srinivasan_2014/lbp_8_1_ri/'];
+							     'alsaih_2016/lbp_8_1_ri/'];
 % Location to store the results
 store_directory = ['/data/retinopathy/OCT/SERI/results/' ...
 							 'srinivasan_2014/'];
@@ -78,23 +78,24 @@ training_label_lbp = [ training_label_lbp (-1 * ones(1, size(lbp_feat, 1))) ];
 
     % Make PCA decomposition keeping the 20 first components which
     % are the one > than 0.5 % of significance
-    %[coeff, score, latent, tsquared, explained, mu] = ...
-	 %    pca(training_data_lbp, 'NumComponents', 20);
+    [coeff, score, latent, tsquared, explained, mu] = ...
+	     pca(training_data_lbp, 'NumComponents', 20);
     % Apply the transformation to the training data
-    % training_data_lbp = score;
+    training_data_lbp = score;
     % Apply the transformation to the testing data
     % Remove the mean computed during the training of the PCA
-    %testing_data_lbp = (bsxfun(@minus, testing_data_lbp, mu)) * coeff;
+    testing_data_lbp = (bsxfun(@minus, testing_data_lbp, mu)) * coeff;
     
 %disp('Projected the data using PCA for LBP');
 
-k=60;
+k=10;
 [idxs C] = kmeans(training_data_lbp,k);
 temp_res=[];
 for mm = 1 : 128 :size(training_data_lbp,1)
 	   [knn_idxs D] = knnsearch( C, training_data_lbp(mm:mm+127,:));
 temp = hist(knn_idxs,k);
-temp = temp ./ sum(temp);
+temp = temp ./ norm(temp);
+%temp = temp ./ sum(temp);
 temp_res = [temp_res; temp];
 end
 training_data_lbp = temp_res;
@@ -109,7 +110,8 @@ temp_res=[];
 for mm = 1 : 128 : size(testing_data_lbp,1)
 	   [knn_idxs D] = knnsearch( C, testing_data_lbp(mm:mm+127,:));
 temp = hist(knn_idxs,k);
-temp = temp ./ sum(temp);
+temp = temp ./ norm(temp);
+%temp = temp ./ sum(temp);
 temp_res=[temp_res; temp];
 end
 testing_data_lbp = temp_res;
@@ -122,15 +124,15 @@ testing_label_lbp = temps;
 
     % Perform the training of the SVM
     % svmStruct = svmtrain( training_data, training_label );
-%SVMModel = fitcsvm(training_data_lbp, training_label_lbp);
+SVMModel = fitcsvm(training_data_lbp, training_label_lbp);
 %SVMModel = fitcsvm(training_data_lbp, training_label_lbp,'KernelFunction','rbf');
-B = TreeBagger(nTrees,training_data_lbp,training_label_lbp, 'Method', 'classification');
+%B = TreeBagger(nTrees,training_data_lbp,training_label_lbp, 'Method', 'classification');
 disp('Trained SVM classifier');
     % Test the performance of the SVM
     % pred_label = svmclassify(svmStruct, testing_data);
-%pred_label = predict(SVMModel, testing_data_lbp);
-pred_label = B.predict(testing_data_lbp);
-pred_label = str2double(pred_label);
+pred_label = predict(SVMModel, testing_data_lbp);
+%pred_label = B.predict(testing_data_lbp);
+%pred_label = str2double(pred_label);
 disp('Tested SVM classifier');
 
     % We need to split the data to get a prediction for each volume
@@ -143,6 +145,6 @@ pred_label_cv( idx_cv_lpo, : ) = maj_vot;
 disp('Applied majority voting');
 end
 
-save(strcat(store_directory, 'predicition_lbp_Randfor_BoW50_16ri.mat'), 'pred_label_cv');
+save(strcat(store_directory, 'predicition_lbp_SVM_BoW10norm_8ri.mat'), 'pred_label_cv');
 
 %delete(poolobj);
