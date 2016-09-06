@@ -1,9 +1,6 @@
 Machine Learning Techniques for DME Classification on SD-OCT images
 ===================================================================
 
-Classification of SD-OCT volumes with multi pyramids, LBP and HOG descriptors: application to DME detections
-============================================================================================================
-
 How to use the pipeline?
 -------
 
