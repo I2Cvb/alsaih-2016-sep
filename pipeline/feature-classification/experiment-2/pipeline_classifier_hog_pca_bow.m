@@ -1,4 +1,4 @@
-function pipeline_classifier_lbp_ri_24_pca(classifier_name)
+function pipeline_classifier_hog_pca_bow(classifier_name, nb_words)
 
 % Check that the classifier is known
 if ~(strcmp(classifier_name, 'linear_svm') | ...
@@ -10,10 +10,10 @@ end
 % Give the information about the data location
 % Location of the features
 data_directory = ['/data/retinopathy/OCT/SERI/feature_data/' ...
-                  'alsaih_2016/lbp_24_3_ri/'];
+                  'alsaih_2016/hog/'];
 % Location to store the results
 store_directory = ['/data/retinopathy/OCT/SERI/results/' ...
-                   'alsaih_2016/experiment-1/'];
+                   'alsaih_2016/experiment-2/'];
 % Location of the ground-truth
 gt_file = '/data/retinopathy/OCT/SERI/data.xls';
 
@@ -47,16 +47,16 @@ for idx_cv_lpo = 1:length(idx_class_pos)
     load( strcat( data_directory, filename{ idx_class_pos(idx_cv_lpo) ...
                    } ) );
     % Concatenate the data
-    testing_data = [ testing_data ; lbp_feat ];
+    testing_data = [ testing_data ; hog_feat ];
     % Create and concatenate the label
-    testing_label = [ testing_label ones(1, size(lbp_feat, 1)) ];
+    testing_label = [ testing_label ones(1, size(hog_feat, 1)) ];
     % Load the negative patient
     load( strcat( data_directory, filename{ idx_class_neg(idx_cv_lpo) ...
                    } ) );
     % Concatenate the data
-    testing_data = [ testing_data ; lbp_feat ];
+    testing_data = [ testing_data ; hog_feat ];
     % Create and concatenate the label
-    testing_label = [ testing_label ( -1 * ones(1, size(lbp_feat, 1))) ];
+    testing_label = [ testing_label ( -1 * ones(1, size(hog_feat, 1))) ];
 
     disp('Created the testing set');
 
@@ -71,30 +71,68 @@ for idx_cv_lpo = 1:length(idx_class_pos)
             load( strcat( data_directory, filename{ idx_class_pos(tr_idx) ...
                    } ) );
             % Concatenate the data
-            training_data = [ training_data ; lbp_feat ];
+            training_data = [ training_data ; hog_feat ];
             % Create and concatenate the label
-            training_label = [ training_label ones(1, size(lbp_feat, 1)) ];
+            training_label = [ training_label ones(1, size(hog_feat, 1)) ];
             % Load the negative patient
             load( strcat( data_directory, filename{ idx_class_neg(tr_idx) ...
                    } ) );
             % Concatenate the data
-            training_data = [ training_data ; lbp_feat ];
+            training_data = [ training_data ; hog_feat ];
             % Create and concatenate the label
-            training_label = [ training_label (-1 * ones(1, size(lbp_feat, 1))) ];
+            training_label = [ training_label (-1 * ones(1, size(hog_feat, 1))) ];
         end
     end
 
     disp('Created the training set');
 
-    % Make PCA decomposition keeping the 20 first components which
+    % Make PCA decomposition keeping the 40 first components which
     % are the one > than 0.1 % of significance
     [coeff, score, latent, tsquared, explained, mu] = ...
-        pca(training_data, 'NumComponents', 20);
+        pca(training_data, 'NumComponents', 40);
     % Apply the transformation to the training data
     training_data = score;
     % Apply the transformation to the testing data
     % Remove the mean computed during the training of the PCA
     testing_data = (bsxfun(@minus, testing_data, mu)) * coeff;
+
+    disp('Create BoW representation');
+
+    % Feed all the data to a kmeans classifiers to find the words
+    [idxs, words] = kmeans(training_data, nb_words);
+
+    % Build the histogram for the training data
+    training_histogram = [];
+    % For each volume build an histogram -- size(hog_feat, 1)
+    % represent the 128 B-scans
+    for vol_idx_start = 1 : size(hog_feat, 1) : size(training_data, ...
+                                                     1)
+        % Compute the distance from each sample to each words
+        [knn_idxs, dist] = knnsearch(words, training_data(vol_idx_start : ...
+                                                          vol_idx_start + ...
+                                                          size(hog_feat, 1) ...
+                                                          - 1, :));
+        % Compute the number of occurence of the words
+        vol_histogram = histogram(knn_idxs, nb_words);
+        norm_histogram = vol_histogram.Data ./ sum(vol_histogram.Data);
+        % Concatenate with the other training histograms
+        training_histogram = [training_histogram; norm_histogram];
+    end
+    training_data = training_histogram;
+    testing_histogram = [];
+    for vol_idx_start = 1 : size(hog_feat, 1) : size(testing_data, ...
+                                                     1)
+        [knn_idxs dist] = knnsearch(words, testing_data(vol_idx_start : ...
+                                                        vol_idx_start + ...
+                                                        size(hog_feat, 1) ...
+                                                        - 1,:));
+        % Compute the number of occurence of the words
+        vol_histogram = histogram(knn_idxs, nb_words);
+        norm_histogram = vol_histogram.Data ./ sum(vol_histogram.Data);
+        % Concatenate with the other training histograms
+        testing_histogram = [testing_histogram; norm_histogram];
+    end
+    testing_data = testing_histogram;
 
     if strcmp(classifier_name, 'linear_svm')
 
@@ -133,13 +171,13 @@ for idx_cv_lpo = 1:length(idx_class_pos)
     % We need to split the data to get a prediction for each volume
     % tested
     % Compute the majority voting for each testing volume
-    maj_vot = [ mode( pred_label(1:size(lbp_feat,1)) ) ...
-                mode( pred_label(size(lbp_feat, 1) + 1:end) )];
+    maj_vot = [ mode( pred_label(1:size(hog_feat,1)) ) ...
+                mode( pred_label(size(hog_feat, 1) + 1:end) )];
     pred_label_cv( idx_cv_lpo, : ) = maj_vot;    
     disp('Applied majority voting');
 end
 
-save(strcat(store_directory, ['predicition_lbp_ri_24_pca_', classifier_name, '.mat']), 'pred_label_cv');
+save(strcat(store_directory, ['predicition_hog_pca_', classifier_name, '.mat']), 'pred_label_cv');
 
 end
 

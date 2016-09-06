@@ -15,7 +15,7 @@ data_directory_lbp = ['/data/retinopathy/OCT/SERI/feature_data/' ...
                      'alsaih_2016/lbp_16_2_nri/'];
 % Location to store the results
 store_directory = ['/data/retinopathy/OCT/SERI/results/' ...
-                    'alsaih_2016/'];
+                    'alsaih_2016/experiment-1/'];
 % Location of the ground-truth
 gt_file = '../../../../data/data.csv';
 

@@ -13,7 +13,7 @@ data_directory = ['/data/retinopathy/OCT/SERI/feature_data/' ...
                   'alsaih_2016/lbp_8_1_ri/'];
 % Location to store the results
 store_directory = ['/data/retinopathy/OCT/SERI/results/' ...
-                   'alsaih_2016/'];
+                   'alsaih_2016/experiment-1/'];
 % Location of the ground-truth
 gt_file = '/data/retinopathy/OCT/SERI/data.xls';
 
@@ -47,16 +47,16 @@ for idx_cv_lpo = 1:length(idx_class_pos)
     load( strcat( data_directory, filename{ idx_class_pos(idx_cv_lpo) ...
                    } ) );
     % Concatenate the data
-    testing_data = [ testing_data ; hog_feat ];
+    testing_data = [ testing_data ; lbp_feat ];
     % Create and concatenate the label
-    testing_label = [ testing_label ones(1, size(hog_feat, 1)) ];
+    testing_label = [ testing_label ones(1, size(lbp_feat, 1)) ];
     % Load the negative patient
     load( strcat( data_directory, filename{ idx_class_neg(idx_cv_lpo) ...
                    } ) );
     % Concatenate the data
-    testing_data = [ testing_data ; hog_feat ];
+    testing_data = [ testing_data ; lbp_feat ];
     % Create and concatenate the label
-    testing_label = [ testing_label ( -1 * ones(1, size(hog_feat, 1))) ];
+    testing_label = [ testing_label ( -1 * ones(1, size(lbp_feat, 1))) ];
 
     disp('Created the testing set');
 
@@ -71,16 +71,16 @@ for idx_cv_lpo = 1:length(idx_class_pos)
             load( strcat( data_directory, filename{ idx_class_pos(tr_idx) ...
                    } ) );
             % Concatenate the data
-            training_data = [ training_data ; hog_feat ];
+            training_data = [ training_data ; lbp_feat ];
             % Create and concatenate the label
-            training_label = [ training_label ones(1, size(hog_feat, 1)) ];
+            training_label = [ training_label ones(1, size(lbp_feat, 1)) ];
             % Load the negative patient
             load( strcat( data_directory, filename{ idx_class_neg(tr_idx) ...
                    } ) );
             % Concatenate the data
-            training_data = [ training_data ; hog_feat ];
+            training_data = [ training_data ; lbp_feat ];
             % Create and concatenate the label
-            training_label = [ training_label (-1 * ones(1, size(hog_feat, 1))) ];
+            training_label = [ training_label (-1 * ones(1, size(lbp_feat, 1))) ];
         end
     end
 
@@ -133,13 +133,13 @@ for idx_cv_lpo = 1:length(idx_class_pos)
     % We need to split the data to get a prediction for each volume
     % tested
     % Compute the majority voting for each testing volume
-    maj_vot = [ mode( pred_label(1:size(hog_feat,1)) ) ...
-                mode( pred_label(size(hog_feat, 1) + 1:end) )];
+    maj_vot = [ mode( pred_label(1:size(lbp_feat,1)) ) ...
+                mode( pred_label(size(lbp_feat, 1) + 1:end) )];
     pred_label_cv( idx_cv_lpo, : ) = maj_vot;    
     disp('Applied majority voting');
 end
 
-save(strcat(store_directory, ['predicition_lbp_ri_8_pca_', classifier_classifier, '.mat']), 'pred_label_cv');
+save(strcat(store_directory, ['predicition_lbp_ri_8_pca_', classifier_name, '.mat']), 'pred_label_cv');
 
 end
 

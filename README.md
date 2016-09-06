@@ -89,12 +89,12 @@ In the file `pipeline/feature-classifier/_***.m`, you need to set the following 
 
 Move to the folder `pipeline/feature-classification/experiment-1/individual/`
 
-The classifier name need to be set with either `linear_svm`, `rbf_svm`, or `random_forest`.
+The classifier name needs to be set with either `linear_svm`, `rbf_svm`, or `random_forest`.
 
 From the root directory, launch MATLAB and run:
 
 ```
->> classifier_name = 'random_forest'
+>> classifier_name = 'random_forest';
 >> pipeline_classification_hog(classifier_name)
 >> pipeline_classification_lbp_8_ri(classifier_name)
 >> pipeline_classification_lbp_16_ri(classifier_name)
@@ -109,18 +109,34 @@ From the root directory, launch MATLAB and run:
 
 Move to the folder `pipeline/feature-classification/experiment-1/combination/`
 
-The classifier name need to be set with either `linear_svm`, `rbf_svm`, or `random_forest`.
+The classifier name needs to be set with either `linear_svm`, `rbf_svm`, or `random_forest`.
 
 From the root directory, launch MATLAB and run:
 
 ```
->> classifier_name = 'random_forest'
+>> classifier_name = 'random_forest';
 >> pipeline_classification_hog_lbp_8_ri_pca(classifier_name)
 >> pipeline_classification_hog_lbp_16_ri_pca(classifier_name)
 >> pipeline_classification_hog_lbp_24_ri_pca(classifier_name)
 ```
 
 #### Experiment 2
+
+Move to the folder `pipeline/feature-classification/experiment-2/`
+
+The classifier name needs to be set with either `linear_svm`, `rbf_svm`, or `random_forest`.
+The number of visual words need also to be set.
+
+From the root directory, launch MATLAB and run:
+
+```
+>> nb_words = 30;
+>> classifier_name = 'random_forest';
+>> pipeline_classification_hog_pca(classifier_name, nb_words)
+>> pipeline_classification_lbp_8_ri_pca(classifier_name, nb_words)
+>> pipeline_classification_lbp_16_ri_pca(classifier_name, nb_words)
+>> pipeline_classification_lbp_24_ri_pca(classifier_name, nb_words)
+```
 
 #### Run the pipeline
 
@@ -147,7 +163,7 @@ In the file `pipeline/feature-validation/pipeline_validation_***.m`, you need to
 
 Move to the folder `pipeline/feature-validation/experiment-1/individual/`
 
-The classifier name need to be set with either `linear_svm`, `rbf_svm`, or `random_forest`.
+The classifier name needs to be set with either `linear_svm`, `rbf_svm`, or `random_forest`.
 
 From the root directory, launch MATLAB and run:
 
@@ -167,7 +183,7 @@ From the root directory, launch MATLAB and run:
 
 Move to the folder `pipeline/feature-validation/experiment-1/combination/`
 
-The classifier name need to be set with either `linear_svm`, `rbf_svm`, or `random_forest`.
+The classifier name needs to be set with either `linear_svm`, `rbf_svm`, or `random_forest`.
 
 From the root directory, launch MATLAB and run:
 
@@ -179,3 +195,17 @@ From the root directory, launch MATLAB and run:
 ```
 
 #### Experiment 2
+
+Move to the folder `pipeline/feature-validation/experiment-2/`
+
+The classifier name needs to be set with either `linear_svm`, `rbf_svm`, or `random_forest`.
+
+From the root directory, launch MATLAB and run:
+
+```
+>> classifier_name = 'random_forest'
+>> pipeline_validation_hog_pca(classifier_name)
+>> pipeline_validation_lbp_8_ri_pca(classifier_name)
+>> pipeline_validation_lbp_16_ri_pca(classifier_name)
+>> pipeline_validation_lbp_24_ri_pca(classifier_name)
+```

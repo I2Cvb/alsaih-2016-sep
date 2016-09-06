@@ -1,14 +1,12 @@
-clear all;
-close all;
-clc;
+function pipeline_validation_lbp_ri_8_pca_bow(classifier_name)
 
-% Add the path for the function
-addpath('../validation');
+% Execute the setup for protoclass matlab
+run('../../../../third-party/protoclass_matlab/setup.m');
 
 % Refer to the classification pipeline to know how the testing set
 % was created
 % Location of the ground-truth
-gt_file = '../../../../data/data.csv';
+gt_file = '/data/retinopathy/OCT/SERI/data.xls';
 
 % Load the csv data
 [~, ~, raw_data] = xlsread(gt_file);
@@ -29,8 +27,10 @@ for idx_cv_lpo = 1:length(idx_class_pos)
 end
 
 % Load the results data
+
 results_filename = ['/data/retinopathy/OCT/SERI/results/' ...
-                 'srinivasan_2014/predicition_lbp_SVM_BoW10norm_8ri.mat'];
+                    'alsaih_2016/experiment-2/', 'predicition_lbp_ri_8_pca', ...
+                    classifier_name, '.mat']];
 load(results_filename);
 
 % Linearize the vector loaded
@@ -38,7 +38,8 @@ pred_label = pred_label_cv';
 pred_label = pred_label(:);
 
 % Get the statistic 
-[ sens, spec, prec, npv, acc, f1s, mcc, gmean, cm ] = metric_confusion_matrix( ...
+[ sens, spec, prec, npv, acc, f1s, mcc, gmean, cm ] = ...
+    metric_confusion_matrix( ...
     pred_label, gt_label );
 
 % Display the information
@@ -49,4 +50,6 @@ disp( ['Negative Predictive Value: ',       num2str(npv)] );
 disp( ['Accuracy: ',                        num2str(acc)] );
 disp( ['F1-score: ',                        num2str(f1s)] );
 disp( ['Matthew Correlation Coefficiant: ', num2str(mcc)] );
-disp( ['Geometric Mean: ',                  num2str(gmean)] );
+disp( ['Geometric Mean: ', num2str(gmean)] );
+
+end
